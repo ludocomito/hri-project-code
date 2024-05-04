@@ -29,6 +29,7 @@ def execute_function(data):
         answer = answer['message']['content']
         response = {'status': status, 'message': answer}
         return json.dumps(response)
+    
     elif request_type == 'age':
         cap = cv2.VideoCapture(2)
         ret, frame = cap.read()
@@ -37,7 +38,6 @@ def execute_function(data):
 
         im = Image.open('img.jpg')
         result = pipe(im)[0]['label']
-        print(result)
         status = 200
         response = {'status': status, 'message': result}
         return json.dumps(response)
