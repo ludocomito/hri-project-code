@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+{% block title %}Quiz{% endblock %}
+{% block content %}
+    <style>
+
+        .card {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .card-body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .question-container {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #question-form {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 100%;
+            height: 100%;
+            background-image: url('static/images/background.jpeg');
+            background-position: center;
+            background-size: cover;
+            color: rgb(255, 255, 255);
+            text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+        }
+
+        #question-container {
+            height: 100%;
+            width: 100%;
+            padding: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        #question {
+            font-size: 300%;
+        }
+
+        .form-check-label {
+            font-size: 200%;
+            margin-left: 3%;
+            margin-top: 1.5%;
+            margin-bottom: 1.5%;
+        }
+        .form-check-input {
+            width: 40px;
+            height: 40px;
+            margin-top: 1.5%;
+            margin-bottom: 1.5%;
+        }
+
+        #completed {
+            font-size: 150px;
+            text-align: center;
+        }
+
+        #quiz-container {
+            height: 100%;
+            width: 100%;
+            padding: 0;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-self: center;
+        }
+
+        #quiz-completed-container {
+            size: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-self: center;
+            padding: 0;
+        }
+
+    </style>
+    <div id="quiz-container">
+        <div class="card">
+            <div class="card-body">
+                <div id="question-container">
+                    <form id="question-form">
+                        <div id="question" class="mb-4"></div>
+                        <div id="options"></div>
+                        <div class="mb-3"></div> <!-- Adding space between options and button -->
+                        <button type="submit" class="btn btn-primary" style="font-size: 200%;">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="quiz-completed-container" style="display: none;">
+        <h1 id="completed" >QUIZ COMPLETED</h1>
+    </div>
+
+    <script>
+        // This script will dynamically load the question based on the difficulty parameter passed by the backend
+
+        // Define the questions for each difficulty level
+        const questions = {
+            hard: [
+                {
+                    question: "What was the original title of the 'Mona Lisa' painting?",
+                    options: ["La Gioconda", "Portrait of Lisa Gherardini", "The Enigmatic Smile", "Renaissance Beauty"],
+                    answer: "La Gioconda"
+                },
+                {
+                    question: "Which technique is used in the 'Mona Lisa' to achieve the subtle transitions of light and shadow?",
+                    options: ["Chiaroscuro", "Impasto", "Tenebrism", "Sfumato"],
+                    answer: "Sfumato"
+                },
+                {
+                    question: "What is the size of the 'Mona Lisa' painting?",
+                    options: [ "90 cm × 70 cm (35 in × 27 in)", "77 cm × 53 cm (30 in × 21 in)", "100 cm × 75 cm (39 in × 29 in)", "120 cm × 90 cm (47 in × 35 in)"],
+                    answer: "77 cm × 53 cm (30 in × 21 in)"
+                }
+            ],
+            medium: [
+                {
+                    question: "In which museum is the 'Mona Lisa' currently housed?",
+                    options: ["The Louvre Museum, Paris", "The Vatican Museums, Rome", "The Metropolitan Museum of Art, New York", "The British Museum, London"],
+                    answer: "The Louvre Museum, Paris"
+                },
+                {
+                    question: "What year was the 'Mona Lisa' stolen from the Louvre?",
+                    options: ["1943", "1956", "1911", "1972"],
+                    answer: "1911"
+                },
+                {
+                    question: "Who was the subject believed to be in the 'Mona Lisa' painting?",
+                    options: ["Isabella d'Este", "Lisa del Giocondo", "Caterina Sforza", "Cecilia Gallerani"],
+                    answer: "Lisa del Giocondo"
+                }
+            ],
+            easy: [
+                {
+                    question: "What is the Mona Lisa most famous for?",
+                    options: ["Her big hat", "Her beautiful smile", "Her pet cat", "Her colorful dress"],
+                    answer: "Her beautiful smile"
+                },
+                {
+                    question: "Where can you find the Mona Lisa painting?",
+                    options: ["At the zoo", "In a library", "In a museum", "In a playground"],
+                    answer: "In a museum"
+                },
+                {
+                    question: "Who painted the Mona Lisa?",
+                    options: ["Leonardo da Vinci", "Vincent van Gogh", "Pablo Picasso", "Frida Kahlo"],
+                    answer: "Leonardo da Vinci"
+                }
+            ]
+        };
+
+        // Call the loadQuestion function with the difficulty parameter passed by the backend
+        const urlParams = new URLSearchParams(window.location.search);
+        const difficulty = urlParams.get('difficulty');
+
+        var ind = 0;
+        const quizContainer = document.getElementById("quiz-container");
+        const quizCompletedContainer = document.getElementById("quiz-completed-container");
+        const questionContainer = document.getElementById("question");
+        const optionsContainer = document.getElementById("options");
+        const questionForm = document.getElementById("question-form");
+
+        loadQuestion(difficulty);
+
+        // Function to load a question based on difficulty
+        function loadQuestion(difficulty) {
+
+            // Randomly select a question from the specified difficulty level
+            const questionSet = questions[difficulty];
+            // const randomIndex = Math.floor(Math.random() * questionSet.length);
+
+            const questionData = questionSet[ind];
+            ind = ind + 1;
+            // Display the question and options
+            questionContainer.textContent = questionData.question;
+
+            // Clear previous options
+            optionsContainer.innerHTML = '';
+
+            // Create radio buttons for each option
+            questionData.options.forEach((option, index) => {
+                const optionDiv = document.createElement("div");
+                optionDiv.classList.add("form-check");
+
+                const optionElement = document.createElement("input");
+                optionElement.type = "radio";
+                optionElement.name = "option";
+                optionElement.value = option;
+                optionElement.classList.add("form-check-input");
+
+                const optionLabel = document.createElement("label");
+                optionLabel.textContent = option;
+                optionLabel.classList.add("form-check-label");
+
+                optionDiv.appendChild(optionElement);
+                optionDiv.appendChild(optionLabel);
+                optionsContainer.appendChild(optionDiv);
+            });
+        }
+
+        // Submit event listener
+        questionForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+            const selectedOption = document.querySelector('input[name="option"]:checked');
+            if (selectedOption) {
+                const userAnswer = selectedOption.value;
+                const questionSet = questions[difficulty];
+                const questionData = questionSet[ind-1];
+                // Do something with the user's answer (e.g., send it to backend for evaluation)
+                console.log("User's answer:", userAnswer);
+
+                var result = "incorrect";
+                if (userAnswer == questionData.answer) {
+                    console.log("User's answer is CORRECT");
+                    var result = "correct";
+                } else {
+                    console.log("User's answer is INCORRECT. the right answer is: ", questionData.answer);
+                }
+                
+                // Reload a new question after submitting answer
+                var status;
+                if (ind<3) {
+                    status = "active";
+                    loadQuestion(difficulty);
+                } else {
+                    status = "stop";
+                    const completed = document.getElementById("completed");
+                    completed.textContent = "QUIZ COMPLETED";
+                    quizContainer.style.display = "none";
+                    quizCompletedContainer.style.display = "block";
+                    
+                }
+
+                sendData(result, status)
+            } else {
+                alert("Please select an option!");
+            }
+        });
+
+
+        // Function to send POST request
+        function sendData(result, status) {
+            var xhr = new XMLHttpRequest();
+            var url = "http://0.0.0.0:8014"; // CHANGE URL
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            var data = JSON.stringify({"result": result, "status": status}); // Data to be sent
+            console.log(data);
+            xhr.send(data);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log(xhr.responseText); // Log response from server
+                }
+            };
+        }
+    </script>
+{% endblock %}

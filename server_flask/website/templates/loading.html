@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Home - My App{% endblock %}
+
+{% block content %}
+    <style>
+
+        .content {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 2%;
+            background-position: center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .content-2 {
+            width: 100%;
+            height: inherit;
+            background-image: url('static/images/Senza titolo-2.jpg');
+            background-position: center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 3% 3%;
+        }
+
+        .loading {
+            width: fit-content;
+            height: fit-content;
+            padding: 3%;
+            background-color: white;
+            border-radius: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+
+    <div class="content">
+        <div class="content-2">
+            <div class="loading">
+                <div>
+                    <p style="font-size: 400%;">Loading...</p>
+                </div>
+                <div class="spinner-border text-primary" role="status" style="width: 6rem; height: 6rem;">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
