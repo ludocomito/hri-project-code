@@ -453,7 +453,7 @@ if __name__ == "__main__":
 
     send_tablet_server_request("GET",route="/display-home")
 
-    session.say("Thank you for visiting our museum ,I hope you enjoyed learning about Mona Lisa. Have a great day!")
+    session.say("Thank you for visiting our museum, I hope you enjoyed learning about Mona Lisa. Have a great day!")
 
 
 
